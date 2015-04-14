@@ -17,9 +17,9 @@ if ("createproject" !== args[0].toLowerCase()) {
 	process.exit(1);
 }
 
-// Second arg should be Project Path
+// Second arg should be either Project Path
 // @ToDo check if path exists
-if (! args[1].match(/^[a-zA-Z0-9]+$/)) {
+if (! args[1].match(/^[a-zA-Z0-9 -_.\/]+$/)) {
 	console.log(usageString);
 	process.exit(1);
 }
@@ -30,14 +30,25 @@ if (! args[2].match(/^[a-zA-Z0-9]+$/)) {
 	process.exit(1);
 }
 
-var projectPath = args[1];
-// Remove the last / from the project path if it has one
-projectPath = projectPath.replace(/\/$/, "");
-var projectName = args[2];
-
+// Allow Exec to run git clone and other shell commands
 var exec = require('child_process').exec;
+
+// Remove the last / from the project path if it has one
+var project = args[1].replace(/\/$/, "");
+	project = project + "/" + args[2] 
+
 
 // Ready to create the new project
 console.log('Ready to clone!');
-var gitOutput = exec("git clone https://github.com/KolonyIO/kolony-start-app.git " + projectPath + "/" + projectName).output;
-console.dir(gitOutput);
+var gitOutput = exec("git clone https://github.com/KolonyIO/kolony-start-app.git " + project).output;
+if (undefined !== gitOutput) {
+	console.dir(gitOutput);
+}
+
+
+// Run install
+console.log('Installing project');
+var runInstall = exec("cd " + project + " && ./install.sh");
+console.log(runInstall);
+
+console.log('Ready to start');
