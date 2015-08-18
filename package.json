@@ -2,7 +2,10 @@
   "name": "kolony-cli",
   "version": "0.0.1",
   "description": "Command line utility for setting up kolony projects",
-  "main": "kolony",
+  "main": "kolony.js",
+  "bin":{
+    "kolony": "./kolony.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
