@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Command line utility for setting up kolony projects",
   "main": "kolony.js",
-  "bin":{
+  "bin": {
     "kolony": "./kolony.js"
   },
   "scripts": {
@@ -21,5 +21,14 @@
   "bugs": {
     "url": "https://github.com/KolonyIO/kolony-cli/issues"
   },
-  "homepage": "https://github.com/KolonyIO/kolony-cli"
+  "homepage": "https://github.com/KolonyIO/kolony-cli",
+  "dependencies": {
+    "cli-table": "^0.3.1",
+    "commander": "^2.8.1",
+    "extfs": "0.0.7",
+    "inquirer": "^0.9.0",
+    "shelljs": "^0.5.3",
+    "simple-git": "^1.7.0",
+    "wrench": "^1.5.8"
+  }
 }
