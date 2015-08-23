@@ -54,6 +54,10 @@ function initProject(projectInfo, tempSeedRepositoryDir){
 
     appKolonyInfo.name = projectInfo.name;
     appKolonyInfo.version = '0.0.1';
+    appKolonyInfo.repositoty = {
+      "type": "git",
+      "url": projectInfo.repository
+    };
 
     fs.writeFileSync(appKolonyFile, JSON.stringify(appKolonyInfo, null, 4));
 

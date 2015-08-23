@@ -51,12 +51,6 @@ if (moduleName.indexOf(".git")>0){
 
 haveRepository = (moduleRepository!==undefined)
 
-// console.log("name: "+moduleName);
-// console.log("repo: "+moduleRepository);
-//
-// console.log("have name: "+haveName.toString());
-// console.log("have repo: "+haveRepository.toString());
-
 if (haveName && ! haveRepository){
   console.log('searching for modules ...');
   sources.search(moduleName, function(error, results){
