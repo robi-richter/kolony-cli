@@ -32,7 +32,7 @@ Provides a command line interface to manage KolonyIO projects
   * `kolony info projectName`
   * `kolony status projectName`
   * `kolony update projectName [-r|--recorsive]`
-  * `kolony start|stop|restart|logs projectName`
+  * `kolony start|stop|restart|logs projectName --kolony kolonyName --container containerName`
 
 ### Module Commands
   * `kolony [-p projectName] extendModule [sourceModuleName] [sourceModuleGitRepo] newModuleName newModuleGitRepo`
