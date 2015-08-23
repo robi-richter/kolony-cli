@@ -9,59 +9,63 @@ var fs  = require('fs');
 var extfs  = require('extfs');
 var wrench = require('wrench');
 var environment = require("./lib/environment.js");
+var resources = require("./lib/resources.js");
 var projectName, projectPath;
 require('shelljs/global');
 
 // initialises the project with content from seed and performs the install
 function initProject(projectInfo, tempSeedRepositoryDir){
-  cp("-r", tempSeedRepositoryDir+"/*", projectInfo.path);
+  resources.copyProjectSeedToFolder(projectInfo.path, function(error, data){
+    if (error){
+      console.log(error);
+      process.exit(0);
+    }
 
-  console.log(projectInfo.path);
+    console.log('Installing project');
 
-  console.log('Installing project');
+    var gitOutput = exec("cd " + projectInfo.path + " && sh install.sh").output;
+    console.log(gitOutput);
 
-  var gitOutput = exec("cd " + projectInfo.path + " && sh install.sh").output;
-  console.log(gitOutput);
+    // set package info to destination project
+    console.log('Ready to start working in ' + projectInfo.path);
 
-  // set package info to destination project
-  console.log('Ready to start working in ' + projectInfo.path);
+    // customise the package.json file
+    var appPackageFile = path.join(projectInfo.path, 'package.json');
+    var appPackage = require(appPackageFile);
 
-  environment.projects.push({
-    name: projectInfo.name,
-    path: projectInfo.path,
-    repository: projectInfo.repository
+    appPackage.name = projectInfo.name;
+    appPackage.description = projectInfo.name+" kolony project";
+    if (projectInfo.useRepository){
+      appPackage.repository = {
+        type: "git",
+        url: projectInfo.repository
+      }
+    }else{
+      appPackage.repository = {}
+    }
+    appPackage.author = "";
+    appPackage.license = "";
+
+    fs.writeFileSync(appPackageFile, JSON.stringify(appPackage, null, 4));
+
+    // customise the kolony.json file
+    var appKolonyFile = path.join(projectInfo.path, 'kolony.json');
+    var appKolonyInfo = require(appKolonyFile);
+
+    appKolonyInfo.name = projectInfo.name;
+    appKolonyInfo.version = '0.0.1';
+
+    fs.writeFileSync(appKolonyFile, JSON.stringify(appKolonyInfo, null, 4));
+
+
+    // add the project to the current environment
+    environment.projects.push({
+      name: projectInfo.name,
+      path: projectInfo.path,
+      repository: projectInfo.repository
+    });
+    environment.save();
   });
-  environment.save();
-}
-
-// creates the project by cloning the repository provided, and copying content from seed
-function createProject(projectInfo, tempSeedRepositoryDir){
-
-  // check if provided path exists, if not, create it
-  if (!fs.existsSync(projectInfo.path)){
-    wrench.mkdirSyncRecursive(projectInfo.path);
-  }
-
-  // check if it's empty; if not fail
-  if (! extfs.isEmptySync(projectInfo.path)){
-    console.log(projectInfo.path+' is not empty!');
-    process.exit(0);
-  }
-
-  if (projectInfo.useRepository){
-    require('simple-git')()
-      .clone(projectInfo.repository, projectInfo.path, function(error, status){
-          if (error){
-            console.log(error);
-            process.exit(0);
-          }
-          // init project
-          initProject(projectInfo, tempSeedRepositoryDir);
-      })
-  }else{
-    // init project
-    initProject(projectInfo, tempSeedRepositoryDir);
-  }
 }
 
 program
@@ -109,29 +113,30 @@ inquirer.prompt(questions, function(projectInfo){
 
   projectInfo.name = projectName;
   projectInfo.path = projectPath;
-  // setup a the temp directory to hold the seed project - it;s content will be copied in the new project
-  var tempSeedRepositoryDir = path.join(os.tmpdir(), 'kolony', 'seed');
-  if (!fs.existsSync(tempSeedRepositoryDir)){
-    wrench.mkdirSyncRecursive(tempSeedRepositoryDir);
+
+  // check if provided path exists, if not, create it
+  if (!fs.existsSync(projectInfo.path)){
+    wrench.mkdirSyncRecursive(projectInfo.path);
   }
-  console.log("temp dir: "+tempSeedRepositoryDir);
 
-  // if the temp seed dir is already present; make sure it's up tp date; otherwise clone it
+  // check if it's empty; if not fail
+  if (! extfs.isEmptySync(projectInfo.path)){
+    console.log(projectInfo.path+' is not empty!');
+    process.exit(0);
+  }
 
-  if (fs.existsSync(path.join(tempSeedRepositoryDir, ".git"))){
-    require('simple-git')(tempSeedRepositoryDir)
-     .pull(function(error, update) {
-        if (error){
-          conole.log(error);
-          process.exit(0);
-        }
-
-        createProject(projectInfo, tempSeedRepositoryDir);
-     });
-  }else{
+  if (projectInfo.useRepository){
     require('simple-git')()
-      .clone('https://github.com/KolonyIO/kolony-seed.git', tempSeedRepositoryDir, function(error, status){
-          createProject(projectInfo, tempSeedRepositoryDir);
+      .clone(projectInfo.repository, projectInfo.path, function(error, status){
+          if (error){
+            console.log(error);
+            process.exit(0);
+          }
+          // init project
+          initProject(projectInfo);
       })
+  }else{
+    // init project
+    initProject(projectInfo);
   }
 })
