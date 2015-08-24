@@ -3,7 +3,7 @@
 Provides a command line interface to manage KolonyIO projects
 
 ## Project Specific Commands
-
+  * `kolony env` Displayes infos about the current KolonyIO install
   * `kolony list` Projects Inventory; Lists all KolonyIO projects defined and registered on your system
   * `kolony create projectName /project/Path` Create a blank KolonyIO project at the desired path.
     where:
@@ -24,7 +24,9 @@ Provides a command line interface to manage KolonyIO projects
       * `kolony installModule git@github.com:KolonyIO/kolony-module-users.git -p test` install a module by giving it's full git repository path
       * `kolony installModule kolony-module-users` install a module by it's name; this will fetch all `npm`, `github` and `bitbucket` repositories that match the module name; (for `bitbucket` fetching see `bitbucket integration` section bellow.
       * `kolony installModule kolony` install a module by searching though available npm packages / github / bitbucket repositories that contain the 'kolony' string; Please note that if you use `kolony installModule kolony-module` you can narrow down the modules / repos listed to a more accurate list
-
+  * `kolony [-p projectName] -m moduleName createModel modelName` (details in Archidecture section of wiki - TODO!!!)
+  * `kolony [-p projectName] -m moduleName createController controllerName modelName`
+  * `kolony [-p projectName] -m moduleName createApi apiName controllerName modelName`
 
 ## TODO (future commands)
 ### Project Commands
@@ -36,9 +38,6 @@ Provides a command line interface to manage KolonyIO projects
 
 ### Module Commands
   * `kolony [-p projectName] extendModule [sourceModuleName] [sourceModuleGitRepo] newModuleName newModuleGitRepo`
-  * `kolony [-p projectName] -m moduleName createModel modelName`
-  * `kolony [-p projectName] -m moduleName createController controllerName`
-  * `kolony [-p projectName] -m moduleName createApi apiName`
   * `kolony [-p projectName] -m moduleName extendModel modelName`
   * `kolony [-p projectName] -m moduleName extendController controllerName`
   * `kolony [-p projectName] -m moduleName extendApi apiName`
